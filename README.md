@@ -348,6 +348,7 @@
         let planetGroups = {};
         let rotationSpeedMultiplier = 1;
         let detailLevel = 32;
+        let planetOrbitSpeeds = {};
         
         // Инициализация сцены
         function init() {
@@ -428,15 +429,28 @@
             scene.add(sun);
             planets.sun = sun;
             
+            // Сохраняем базовые скорости вращения для каждой планеты
+            planetOrbitSpeeds = {
+                mercury: 0.01,
+                venus: 0.007,
+                earth: 0.005,
+                mars: 0.004,
+                jupiter: 0.003,
+                saturn: 0.002,
+                uranus: 0.0015,
+                neptune: 0.001,
+                pluto: 0.0007
+            };
+            
             // Создаем орбиты и планеты
-            createPlanet('mercury', 1, 0.4, 7, 0.01, 0xa9a9a9);
-            createPlanet('venus', 2, 0.6, 10, 0.007, 0xdaa520);
+            createPlanet('mercury', 1, 0.4, 7, 0xa9a9a9);
+            createPlanet('venus', 2, 0.6, 10, 0xdaa520);
             
             // Земля с луной
             const earthGroup = new THREE.Group();
             scene.add(earthGroup);
             
-            const earth = createPlanet('earth', 3, 0.6, 13, 0.005, 0x1e90ff, earthGroup);
+            const earth = createPlanet('earth', 3, 0.6, 13, 0x1e90ff, earthGroup);
             
             // Луна
             const moonGeometry = new THREE.SphereGeometry(0.2, detailLevel/2, detailLevel/2);
@@ -446,14 +460,14 @@
             earth.add(moon);
             
             // Другие планеты
-            createPlanet('mars', 4, 0.5, 16, 0.004, 0xff4500);
-            createPlanet('jupiter', 6, 1.2, 22, 0.003, 0xffa500);
+            createPlanet('mars', 4, 0.5, 16, 0xff4500);
+            createPlanet('jupiter', 6, 1.2, 22, 0xffa500);
             
             // Сатурн с кольцами
             const saturnGroup = new THREE.Group();
             scene.add(saturnGroup);
             
-            const saturn = createPlanet('saturn', 7, 1.0, 28, 0.002, 0xf4a460, saturnGroup);
+            const saturn = createPlanet('saturn', 7, 1.0, 28, 0xf4a460, saturnGroup);
             
             // Кольца Сатурна
             const ringGeometry = new THREE.RingGeometry(1.2, 2, 32);
@@ -468,13 +482,13 @@
             saturn.add(rings);
             
             // Остальные планеты
-            createPlanet('uranus', 5, 0.8, 34, 0.0015, 0x87ceeb);
-            createPlanet('neptune', 5, 0.8, 40, 0.001, 0x0000cd);
-            createPlanet('pluto', 2, 0.3, 45, 0.0007, 0xbc8f8f);
+            createPlanet('uranus', 5, 0.8, 34, 0x87ceeb);
+            createPlanet('neptune', 5, 0.8, 40, 0x0000cd);
+            createPlanet('pluto', 2, 0.3, 45, 0xbc8f8f);
         }
         
         // Функция для создания планет
-        function createPlanet(name, orbitRadius, size, orbitSpeed, rotationSpeed, color, parent = scene) {
+        function createPlanet(name, orbitRadius, size, orbitSpeed, color, parent = scene) {
             // Группа для планеты и её орбиты
             const group = new THREE.Group();
             parent.add(group);
@@ -503,8 +517,8 @@
             // Сохраняем параметры для анимации
             planet.userData = {
                 orbitRadius: orbitRadius,
-                orbitSpeed: orbitSpeed,
-                rotationSpeed: rotationSpeed,
+                orbitSpeed: planetOrbitSpeeds[name] || 0.005,
+                rotationSpeed: 0.005,
                 angle: Math.random() * Math.PI * 2
             };
             
@@ -684,7 +698,7 @@
                 },
                 jupiter: {
                     name: "Юпитер",
-                    description: "Пятая и крупнейшая планета Солнечной системы. Газовый гигант. Имеет 79 известных спутников. Знаменит своим Большим Красным Пятном - гигантским штормом, который длится более 350 лет. Масса Юпитера в 2.5 раза превышает массу всех остальных планет вместе взятых. Имеет слабую систему колец."
+                    description: "Пятая и крупнейшая планета Солнечной системы. Газовый гигант. Имеет 79 известных спутников. Знаменит своим Большим Красным Пятном - гигантским штормом, который длится более 350 лет. Масса Юпитера в 2.5 раза превышает массу всех остальных планет вместе взятых. Имееет слабую систему колец."
                 },
                 saturn: {
                     name: "Сатурн",

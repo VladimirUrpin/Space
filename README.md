@@ -26,68 +26,6 @@
             height: 100%;
         }
         
-        #ui-container {
-            position: absolute;
-            bottom: 20px;
-            left: 0;
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            z-index: 100;
-        }
-        
-        .planet-selector {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            background: rgba(0, 30, 60, 0.7);
-            padding: 10px;
-            border-radius: 20px;
-            backdrop-filter: blur(10px);
-            max-width: 90%;
-        }
-        
-        .planet-btn {
-            width: 40px;
-            height: 40px;
-            margin: 5px;
-            border-radius: 50%;
-            border: 2px solid rgba(255, 255, 255, 0.5);
-            background-size: cover;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-        }
-        
-        .planet-btn:hover {
-            transform: scale(1.1);
-            border-color: white;
-        }
-        
-        .planet-btn:hover::after {
-            content: attr(data-name);
-            position: absolute;
-            bottom: -30px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0, 0, 0, 0.8);
-            padding: 5px 10px;
-            border-radius: 5px;
-            white-space: nowrap;
-            z-index: 101;
-        }
-        
-        #sun { background: radial-gradient(circle, #ffd700, #ff8c00); }
-        #mercury { background: radial-gradient(circle, #a9a9a9, #696969); }
-        #venus { background: radial-gradient(circle, #daa520, #b8860b); }
-        #earth { background: radial-gradient(circle, #1e90ff, #006400); }
-        #mars { background: radial-gradient(circle, #ff4500, #8b0000); }
-        #jupiter { background: radial-gradient(circle, #ffa500, #cd853f); }
-        #saturn { background: radial-gradient(circle, #f4a460, #d2691e); }
-        #uranus { background: radial-gradient(circle, #87ceeb, #4682b4); }
-        #neptune { background: radial-gradient(circle, #0000cd, #191970); }
-        #pluto { background: radial-gradient(circle, #bc8f8f, #a0522d); }
-        
         #info-panel {
             position: absolute;
             top: 50%;
@@ -140,7 +78,7 @@
         
         .controls {
             position: absolute;
-            bottom: 90px;
+            bottom: 20px;
             left: 0;
             width: 100%;
             text-align: center;
@@ -219,46 +157,34 @@
             width: 100%;
         }
         
-        select {
+        select, button {
             width: 100%;
             padding: 5px;
             background: rgba(0, 20, 40, 0.8);
             border: 1px solid #1e90ff;
             color: white;
             border-radius: 5px;
+            margin-bottom: 8px;
+        }
+        
+        button {
+            cursor: pointer;
+            padding: 8px;
+            background: rgba(30, 60, 120, 0.8);
+        }
+        
+        button:hover {
+            background: rgba(40, 80, 160, 0.9);
         }
         
         @media (max-width: 768px) {
-            .planet-btn {
-                width: 35px;
-                height: 35px;
-            }
-            
             #info-panel {
                 width: 90%;
                 height: 50%;
             }
             
             .controls {
-                bottom: 120px;
                 font-size: 12px;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .planet-btn {
-                width: 30px;
-                height: 30px;
-                margin: 3px;
-            }
-            
-            .planet-selector {
-                padding: 8px;
-                border-radius: 15px;
-            }
-            
-            .controls {
-                bottom: 130px;
             }
         }
     </style>
@@ -266,21 +192,6 @@
 <body>
     <div id="canvas-container">
         <!-- 3D сцена будет отрисована здесь -->
-    </div>
-    
-    <div id="ui-container">
-        <div class="planet-selector">
-            <div class="planet-btn" id="sun" data-name="Солнце" title="Солнце"></div>
-            <div class="planet-btn" id="mercury" data-name="Меркурий" title="Меркурий"></div>
-            <div class="planet-btn" id="venus" data-name="Венера" title="Венера"></div>
-            <div class="planet-btn" id="earth" data-name="Земля" title="Земля"></div>
-            <div class="planet-btn" id="mars" data-name="Марс" title="Марс"></div>
-            <div class="planet-btn" id="jupiter" data-name="Юпитер" title="Юпитер"></div>
-            <div class="planet-btn" id="saturn" data-name="Сатурн" title="Сатурн"></div>
-            <div class="planet-btn" id="uranus" data-name="Уран" title="Уран"></div>
-            <div class="planet-btn" id="neptune" data-name="Нептун" title="Нептун"></div>
-            <div class="planet-btn" id="pluto" data-name="Плутон" title="Плутон"></div>
-        </div>
     </div>
     
     <div class="controls">
@@ -307,22 +218,22 @@
         <div class="settings-group">
             <h3>Скорость вращения</h3>
             <div class="slider-container">
-                <input type="range" id="rotation-speed" min="0.1" max="2" step="0.1" value="1">
+                <input type="range" id="rotation-speed" min="0" max="2" step="0.1" value="1">
                 <span id="rotation-value">1x</span>
             </div>
         </div>
         
         <div class="settings-group">
-            <h3>Детализация планет</h3>
+            <h3>Расстояние между планетами</h3>
             <div class="slider-container">
-                <input type="range" id="detail-level" min="16" max="64" step="16" value="32">
-                <span id="detail-value">32</span>
+                <input type="range" id="distance-scale" min="0.5" max="2" step="0.1" value="1">
+                <span id="distance-value">1x</span>
             </div>
         </div>
         
         <div class="settings-group">
-            <h3>Центральная планета</h3>
-            <select id="center-planet">
+            <h3>Выбор планеты</h3>
+            <select id="planet-selector">
                 <option value="sun">Солнце</option>
                 <option value="mercury">Меркурий</option>
                 <option value="venus">Венера</option>
@@ -334,6 +245,15 @@
                 <option value="neptune">Нептун</option>
                 <option value="pluto">Плутон</option>
             </select>
+            <button id="focus-planet">Сфокусироваться</button>
+        </div>
+        
+        <div class="settings-group">
+            <h3>Детализация планет</h3>
+            <div class="slider-container">
+                <input type="range" id="detail-level" min="16" max="64" step="16" value="32">
+                <span id="detail-value">32</span>
+            </div>
         </div>
     </div>
 
@@ -347,8 +267,10 @@
         let planets = {};
         let planetGroups = {};
         let rotationSpeedMultiplier = 1;
+        let distanceScale = 1;
         let detailLevel = 32;
         let planetOrbitSpeeds = {};
+        let planetOrbitRadius = {};
         
         // Инициализация сцены
         function init() {
@@ -429,7 +351,7 @@
             scene.add(sun);
             planets.sun = sun;
             
-            // Сохраняем базовые скорости вращения для каждой планеты
+            // Сохраняем базовые скорости вращения и радиусы орбит для каждой планеты
             planetOrbitSpeeds = {
                 mercury: 0.01,
                 venus: 0.007,
@@ -442,15 +364,27 @@
                 pluto: 0.0007
             };
             
+            planetOrbitRadius = {
+                mercury: 7,
+                venus: 10,
+                earth: 13,
+                mars: 16,
+                jupiter: 22,
+                saturn: 28,
+                uranus: 34,
+                neptune: 40,
+                pluto: 45
+            };
+            
             // Создаем орбиты и планеты
-            createPlanet('mercury', 1, 0.4, 7, 0xa9a9a9);
-            createPlanet('venus', 2, 0.6, 10, 0xdaa520);
+            createPlanet('mercury', 0.4, 0xa9a9a9);
+            createPlanet('venus', 0.6, 0xdaa520);
             
             // Земля с луной
             const earthGroup = new THREE.Group();
             scene.add(earthGroup);
             
-            const earth = createPlanet('earth', 3, 0.6, 13, 0x1e90ff, earthGroup);
+            const earth = createPlanet('earth', 0.6, 0x1e90ff, earthGroup);
             
             // Луна
             const moonGeometry = new THREE.SphereGeometry(0.2, detailLevel/2, detailLevel/2);
@@ -460,14 +394,14 @@
             earth.add(moon);
             
             // Другие планеты
-            createPlanet('mars', 4, 0.5, 16, 0xff4500);
-            createPlanet('jupiter', 6, 1.2, 22, 0xffa500);
+            createPlanet('mars', 0.5, 0xff4500);
+            createPlanet('jupiter', 1.2, 0xffa500);
             
             // Сатурн с кольцами
             const saturnGroup = new THREE.Group();
             scene.add(saturnGroup);
             
-            const saturn = createPlanet('saturn', 7, 1.0, 28, 0xf4a460, saturnGroup);
+            const saturn = createPlanet('saturn', 1.0, 0xf4a460, saturnGroup);
             
             // Кольца Сатурна
             const ringGeometry = new THREE.RingGeometry(1.2, 2, 32);
@@ -482,18 +416,19 @@
             saturn.add(rings);
             
             // Остальные планеты
-            createPlanet('uranus', 5, 0.8, 34, 0x87ceeb);
-            createPlanet('neptune', 5, 0.8, 40, 0x0000cd);
-            createPlanet('pluto', 2, 0.3, 45, 0xbc8f8f);
+            createPlanet('uranus', 0.8, 0x87ceeb);
+            createPlanet('neptune', 0.8, 0x0000cd);
+            createPlanet('pluto', 0.3, 0xbc8f8f);
         }
         
         // Функция для создания планет
-        function createPlanet(name, orbitRadius, size, orbitSpeed, color, parent = scene) {
+        function createPlanet(name, size, color, parent = scene) {
             // Группа для планеты и её орбиты
             const group = new THREE.Group();
             parent.add(group);
             
             // Орбита
+            const orbitRadius = planetOrbitRadius[name] * distanceScale;
             const orbit = new THREE.RingGeometry(orbitRadius, orbitRadius + 0.01, 64);
             const orbitMaterial = new THREE.MeshBasicMaterial({ 
                 color: 0x444444, 
@@ -553,16 +488,6 @@
         
         // Обработка событий
         function setupEventListeners() {
-            // Кнопки выбора планет
-            const planetButtons = document.querySelectorAll('.planet-btn');
-            planetButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    const planetId = button.id;
-                    focusOnPlanet(planetId);
-                    showPlanetInfo(planetId);
-                });
-            });
-            
             // Кнопка закрытия информации
             document.getElementById('close-info').addEventListener('click', () => {
                 document.getElementById('info-panel').classList.remove('visible');
@@ -582,6 +507,18 @@
                 rotationValue.textContent = rotationSpeedMultiplier.toFixed(1) + 'x';
             });
             
+            // Настройки расстояния между планетами
+            const distanceSlider = document.getElementById('distance-scale');
+            const distanceValue = document.getElementById('distance-value');
+            
+            distanceSlider.addEventListener('input', () => {
+                distanceScale = parseFloat(distanceSlider.value);
+                distanceValue.textContent = distanceScale.toFixed(1) + 'x';
+                
+                // Пересоздаем солнечную систему с новым масштабом расстояний
+                resetSolarSystem();
+            });
+            
             // Настройки детализации
             const detailSlider = document.getElementById('detail-level');
             const detailValue = document.getElementById('detail-value');
@@ -594,9 +531,11 @@
                 resetSolarSystem();
             });
             
-            // Выбор центральной планеты
-            document.getElementById('center-planet').addEventListener('change', (e) => {
-                focusOnPlanet(e.target.value);
+            // Выбор планеты для фокусировки
+            document.getElementById('focus-planet').addEventListener('click', () => {
+                const planetId = document.getElementById('planet-selector').value;
+                focusOnPlanet(planetId);
+                showPlanetInfo(planetId);
             });
         }
         
@@ -698,7 +637,7 @@
                 },
                 jupiter: {
                     name: "Юпитер",
-                    description: "Пятая и крупнейшая планета Солнечной системы. Газовый гигант. Имеет 79 известных спутников. Знаменит своим Большим Красным Пятном - гигантским штормом, который длится более 350 лет. Масса Юпитера в 2.5 раза превышает массу всех остальных планет вместе взятых. Имееет слабую систему колец."
+                    description: "Пятая и крупнейшая планета Солнечной системы. Газовый гигант. Имеет 79 известных спутников. Знаменит своим Большим Красным Пятном - гигантским штормом, который длится более 350 лет. Масса Юпитера в 2.5 раза превышает массу всех остальных планет вместе взятых. Имеет слабую систему колец."
                 },
                 saturn: {
                     name: "Сатурн",

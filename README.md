@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -54,7 +55,7 @@
             border-radius: 50%;
             background: radial-gradient(circle, #ff8a00, #ff2070);
             box-shadow: 0 0 25px rgba(255, 138, 0, 0.7);
-            transition: transform 0.2s;
+            transition: transform 0.5s ease;
         }
         
         .settings-icon {
@@ -232,25 +233,23 @@
             backdrop-filter: blur(5px);
         }
         
-        .sound-toggle {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: rgba(255, 255, 255, 0.2);
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        .start-palming-btn {
+            background: rgba(255, 138, 0, 0.7);
+            border: none;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 50px;
             cursor: pointer;
-            z-index: 100;
+            font-size: 16px;
+            margin-top: 15px;
+            transition: all 0.3s ease;
             backdrop-filter: blur(5px);
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
         }
         
-        .sound-toggle.muted svg {
-            opacity: 0.5;
+        .start-palming-btn:hover {
+            background: rgba(255, 138, 0, 0.9);
+            transform: translateY(-2px);
         }
         
         @media (max-width: 768px) {
@@ -293,6 +292,7 @@
         <div class="trainer-types">
             <button class="trainer-type-btn active" data-type="movingObject">Движущийся объект</button>
             <button class="trainer-type-btn" data-type="focusChange">Смена фокуса</button>
+            <button class="trainer-type-btn" data-type="randomPoint">Случайная точка</button>
             <button class="trainer-type-btn" data-type="palming">Пальминг</button>
             <button class="trainer-type-btn" data-type="figureEight">Восьмёрка</button>
         </div>
@@ -303,17 +303,15 @@
             <div class="target" id="target"></div>
             <div id="specialContent"></div>
         </div>
+
+        <div id="palmingControls" style="display: none;">
+            <button class="start-palming-btn" id="startPalmingBtn">Начать пальминг</button>
+        </div>
     </div>
     
     <div class="settings-icon" id="settingsIcon">
         <svg viewBox="0 0 24 24">
             <path d="M12 15.5A3.5 3.5 0 0 1 8.5 12 3.5 3.5 0 0 1 12 8.5a3.5 3.5 0 0 1 3.5 3.5 3.5 3.5 0 0 1-3.5 3.5m7.43-2.53c.04.32.07.64.07.97 0 .33-.03.66-.07.97l2.44 1.92c.18.14.23.41.12.62l-2.3 3.98c-.12.21-.37.31-.59.22l-2.88-1.18c-.61.48-1.29.87-2.02 1.15l-.44 3.06c-.04.24-.24.42-.49.42h-4.6c-.25 0-.45-.18-.49-.42l-.44-3.06c-.73-.28-1.41-.67-2.02-1.15l-2.88 1.18c-.22.09-.47 0-.59-.22l-2.3-3.98c-.12-.21-.08-.47.12-.62l2.44-1.92c-.04-.31-.07-.64-.07-.97 0-.33.03-.66.07-.97l-2.44-1.92c-.18-.14-.23-.41-.12-.62l2.3-3.98c.12-.21.37-.31.59-.22l2.88 1.18c.61-.48 1.29-.87 2.02-1.15l.44-3.06c.04-.24.24-.42.49-.42h4.6c.25 0 .45.18.49.42l.44 3.06c.73.28 1.41.67 2.02 1.15l2.88-1.18c.22-.09.47 0 .59.22l2.3 3.98c.12.21.08.47-.12.62l-2.44 1.92z"/>
-        </svg>
-    </div>
-    
-    <div class="sound-toggle" id="soundToggle">
-        <svg viewBox="0 0 24 24" width="24" height="24" fill="white">
-            <path d="M14,3.23V5.29C16.89,6.15 19,8.83 19,12C19,15.17 16.89,17.84 14,18.7V20.77C18,19.86 21,16.28 21,12C21,7.72 18,4.14 14,3.23M16.5,12C16.5,10.23 15.5,8.71 14,7.97V16C15.5,15.29 16.5,13.76 16.5,12M3,9V15H7L12,20V4L7,9H3Z"/>
         </svg>
     </div>
     
@@ -370,6 +368,7 @@
             <p>Следите за движущимся объектом, не двигая головой. Это упражнение помогает расслабить глазные мышцы и улучшить кровообращение.</p>
             <p>Рекомендуется выполнять упражнение в течение 2-3 минут, затем сделать перерыв.</p>
             <p>В режиме "Пальминг" закройте глаза и прикройте их ладонями, слушая звуковой отчет.</p>
+            <p>В режиме "Случайная точка" объект будет появляться в разных местах экрана.</p>
         </div>
     </div>
 
@@ -386,7 +385,8 @@
             const timer = document.getElementById('timer');
             const specialContent = document.getElementById('specialContent');
             const trainerTypeButtons = document.querySelectorAll('.trainer-type-btn');
-            const soundToggle = document.getElementById('soundToggle');
+            const palmingControls = document.getElementById('palmingControls');
+            const startPalmingBtn = document.getElementById('startPalmingBtn');
             
             // Настройки по умолчанию
             let settings = {
@@ -397,8 +397,7 @@
                 pattern: 'random',
                 bgColor: '#1a2a6c',
                 duration: 3,
-                currentTrainer: 'movingObject',
-                soundEnabled: true
+                currentTrainer: 'movingObject'
             };
             
             // Состояние тренажёра
@@ -413,6 +412,7 @@
             let palmTimer = null;
             let palmCounter = 30;
             let tickSound = null;
+            let randomPointTimer = null;
             
             // Инициализация звука
             function initSound() {
@@ -423,8 +423,6 @@
                     
                     // Создаем осциллятор для звука тика
                     tickSound = function() {
-                        if (!settings.soundEnabled) return;
-                        
                         const oscillator = audioContext.createOscillator();
                         const gainNode = audioContext.createGain();
                         
@@ -458,11 +456,6 @@
                     document.getElementById('pattern').value = settings.pattern;
                     document.getElementById('bgColor').value = settings.bgColor;
                     document.getElementById('duration').value = settings.duration;
-                    
-                    // Настройка звука
-                    if (!settings.soundEnabled) {
-                        soundToggle.classList.add('muted');
-                    }
                     
                     // Активируем текущий тип тренажёра
                     document.querySelectorAll('.trainer-type-btn').forEach(btn => {
@@ -612,7 +605,7 @@
                 if (!isRunning) return;
                 
                 const time = new Date().getTime() * 0.001;
-                const scale = 0.7 + 0.3 * Math.sin(time);
+                const scale = 1 + 9 * Math.sin(time); // Увеличение в 10 раз
                 
                 target.style.transform = `scale(${scale})`;
                 target.style.left = '50%';
@@ -621,6 +614,40 @@
                 target.style.marginTop = `-${settings.size/2}px`;
                 
                 animationId = requestAnimationFrame(animateFocusChange);
+            }
+            
+            // Анимация для случайной точки
+            function animateRandomPoint() {
+                if (!isRunning) return;
+                
+                // Показываем объект
+                target.style.display = 'block';
+                target.style.transform = 'scale(1)';
+                
+                // Устанавливаем случайную позицию
+                const areaWidth = exerciseArea.offsetWidth;
+                const areaHeight = exerciseArea.offsetHeight;
+                const targetSize = settings.size;
+                
+                x = Math.random() * (areaWidth - targetSize);
+                y = Math.random() * (areaHeight - targetSize);
+                
+                target.style.left = `${x}px`;
+                target.style.top = `${y}px`;
+                
+                // Скрываем через случайное время (1-3 секунды)
+                setTimeout(() => {
+                    if (isRunning && settings.currentTrainer === 'randomPoint') {
+                        target.style.display = 'none';
+                        
+                        // Показываем снова через паузу
+                        setTimeout(() => {
+                            if (isRunning && settings.currentTrainer === 'randomPoint') {
+                                animateRandomPoint();
+                            }
+                        }, 1000);
+                    }
+                }, 1000 + Math.random() * 2000);
             }
             
             // Анимация для пальминга
@@ -642,6 +669,11 @@
                 // Запускаем звуковой отчет
                 if (palmTimer) clearInterval(palmTimer);
                 
+                // Воспроизводим звук сразу при запуске
+                if (tickSound) {
+                    tickSound();
+                }
+                
                 palmTimer = setInterval(() => {
                     if (palmCounter > 0 && isRunning && settings.currentTrainer === 'palming') {
                         palmCounter--;
@@ -660,7 +692,7 @@
                                 exerciseArea.style.background = '';
                                 target.style.display = 'block';
                                 specialContent.innerHTML = '';
-                                setTimeout(animatePalming, 1000);
+                                palmingControls.style.display = 'block';
                             }
                         }, 2000);
                     }
@@ -701,10 +733,24 @@
                     palmTimer = null;
                 }
                 
+                // Останавливаем таймер случайной точки
+                if (randomPointTimer) {
+                    clearTimeout(randomPointTimer);
+                    randomPointTimer = null;
+                }
+                
                 // Сбрасываем специальный контент
                 specialContent.innerHTML = '';
                 target.style.display = 'block';
+                target.style.transform = 'scale(1)';
                 exerciseArea.style.background = '';
+                
+                // Показываем/скрываем кнопку для пальминга
+                if (type === 'palming') {
+                    palmingControls.style.display = 'block';
+                } else {
+                    palmingControls.style.display = 'none';
+                }
                 
                 // Запускаем выбранную анимацию
                 switch(type) {
@@ -714,8 +760,11 @@
                     case 'focusChange':
                         animateFocusChange();
                         break;
+                    case 'randomPoint':
+                        animateRandomPoint();
+                        break;
                     case 'palming':
-                        animatePalming();
+                        // Ждем нажатия кнопки для пальминга
                         break;
                     case 'figureEight':
                         animateFigureEight();
@@ -776,13 +825,10 @@
                 });
             });
             
-            // Переключение звука
-            soundToggle.addEventListener('click', () => {
-                settings.soundEnabled = !settings.soundEnabled;
-                soundToggle.classList.toggle('muted');
-                
-                // Сохраняем настройки
-                localStorage.setItem('eyeTrainerSettings', JSON.stringify(settings));
+            // Кнопка начала пальминга
+            startPalmingBtn.addEventListener('click', () => {
+                palmingControls.style.display = 'none';
+                animatePalming();
             });
             
             // Адаптация для мобильных устройств

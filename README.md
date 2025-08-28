@@ -80,7 +80,30 @@
             background: rgba(255, 255, 255, 0.3);
         }
         
-        .settings-icon svg {
+        .info-icon {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 100;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .info-icon:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+        
+        .settings-icon svg, .info-icon svg {
             width: 24px;
             height: 24px;
             fill: white;
@@ -104,11 +127,29 @@
             overflow-y: auto;
         }
         
-        .settings-menu.active {
+        .instructions-menu {
+            position: fixed;
+            top: 80px;
+            left: 20px;
+            background: rgba(30, 30, 50, 0.95);
+            border-radius: 15px;
+            padding: 20px;
+            width: 300px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            z-index: 99;
+            transform: translateX(-400px);
+            transition: transform 0.4s ease;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .settings-menu.active, .instructions-menu.active {
             transform: translateX(0);
         }
         
-        .settings-menu h2 {
+        .settings-menu h2, .instructions-menu h2 {
             margin-bottom: 20px;
             text-align: center;
             color: #ff8a00;
@@ -160,42 +201,34 @@
             color: white;
         }
         
-        .instructions {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 20px;
-            border-radius: 15px;
-            margin-top: 20px;
-            max-width: 600px;
-            backdrop-filter: blur(5px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            transition: all 0.3s ease;
-            overflow: hidden;
-            max-height: 200px;
-        }
-        
-        .instructions.hidden {
-            max-height: 0;
-            padding: 0;
-            margin: 0;
-            opacity: 0;
-        }
-        
-        .instructions h2 {
-            margin-bottom: 10px;
-            color: #ff8a00;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .instructions h2 span {
-            cursor: pointer;
-            font-size: 18px;
-        }
-        
-        .instructions p {
+        .timer {
+            font-size: 1.2rem;
             margin-bottom: 15px;
-            line-height: 1.5;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px 20px;
+            border-radius: 50px;
+            display: inline-block;
+            backdrop-filter: blur(5px);
+        }
+        
+        .start-palming-btn {
+            background: rgba(255, 138, 0, 0.7);
+            border: none;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            display: none;
+        }
+        
+        .start-palming-btn:hover {
+            background: rgba(255, 138, 0, 0.9);
+            transform: translateY(-2px);
         }
         
         .trainer-types {
@@ -222,40 +255,19 @@
             box-shadow: 0 0 15px rgba(255, 138, 0, 0.5);
         }
         
-        .timer {
-            font-size: 1.2rem;
-            margin-bottom: 15px;
-            background: rgba(255, 255, 255, 0.1);
-            padding: 10px 20px;
-            border-radius: 50px;
-            display: inline-block;
-            backdrop-filter: blur(5px);
-        }
-        
-        .start-palming-btn {
-            background: rgba(255, 138, 0, 0.7);
-            border: none;
-            color: white;
-            padding: 12px 24px;
-            border-radius: 50px;
-            cursor: pointer;
-            font-size: 16px;
-            margin-top: 15px;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(5px);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-        }
-        
-        .start-palming-btn:hover {
-            background: rgba(255, 138, 0, 0.9);
-            transform: translateY(-2px);
-        }
-        
         @media (max-width: 768px) {
-            .settings-menu {
+            .settings-menu, .instructions-menu {
                 width: 90%;
                 right: 5%;
                 left: 5%;
+            }
+            
+            .instructions-menu {
+                transform: translateY(-1000px);
+            }
+            
+            .instructions-menu.active {
+                transform: translateY(0);
             }
             
             h1 {
@@ -303,14 +315,18 @@
             <div id="specialContent"></div>
         </div>
 
-        <div id="palmingControls" style="display: none;">
-            <button class="start-palming-btn" id="startPalmingBtn">Начать пальминг</button>
-        </div>
+        <button class="start-palming-btn" id="startPalmingBtn">Начать пальминг</button>
     </div>
     
     <div class="settings-icon" id="settingsIcon">
         <svg viewBox="0 0 24 24">
             <path d="M12 15.5A3.5 3.5 0 0 1 8.5 12 3.5 3.5 0 0 1 12 8.5a3.5 3.5 0 0 1 3.5 3.5 3.5 3.5 0 0 1-3.5 3.5m7.43-2.53c.04.32.07.64.07.97 0 .33-.03.66-.07.97l2.44 1.92c.18.14.23.41.12.62l-2.3 3.98c-.12.21-.37.31-.59.22l-2.88-1.18c-.61.48-1.29.87-2.02 1.15l-.44 3.06c-.04.24-.24.42-.49.42h-4.6c-.25 0-.45-.18-.49-.42l-.44-3.06c-.73-.28-1.41-.67-2.02-1.15l-2.88 1.18c-.22.09-.47 0-.59-.22l-2.3-3.98c-.12-.21-.08-.47.12-.62l2.44-1.92c-.04-.31-.07-.64-.07-.97 0-.33.03-.66.07-.97l-2.44-1.92c-.18-.14-.23-.41-.12-.62l2.3-3.98c.12-.21.37-.31.59-.22l2.88 1.18c.61-.48 1.29-.87 2.02-1.15l.44-3.06c.04-.24.24-.42.49-.42h4.6c.25 0 .45.18.49.42l.44 3.06c.73.28 1.41.67 2.02 1.15l2.88-1.18c.22-.09.47 0 .59.22l2.3 3.98c.12.21.08.47-.12.62l-2.44 1.92z"/>
+        </svg>
+    </div>
+    
+    <div class="info-icon" id="infoIcon">
+        <svg viewBox="0 0 24 24">
+            <path d="M11,9H13V7H11M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M11,17H13V11H11V17Z"/>
         </svg>
     </div>
     
@@ -349,6 +365,11 @@
         </div>
         
         <div class="setting-group">
+            <label for="pointSpeed">Скорость появления точки (только для режима "Случайная точка")</label>
+            <input type="range" id="pointSpeed" min="1" max="10" value="5">
+        </div>
+        
+        <div class="setting-group">
             <label for="bgColor">Цвет фона</label>
             <input type="color" id="bgColor" value="#1a2a6c">
         </div>
@@ -361,10 +382,36 @@
         <button id="saveSettings" style="width:100%; padding:12px; margin-top:10px; background:rgba(255,138,0,0.7); border:none; border-radius:5px; color:white; cursor:pointer;">Сохранить настройки</button>
     </div>
     
-    <div class="instructions" id="instructions">
-        <h2>Инструкция <span id="toggleInstructions">−</span></h2>
-        <div id="instructionsContent">
-            <p>Следите за движущимся объектом, не двигая головой. Это упражнение помогает расслабить глазные мышцы и улучшить кровообращение. Рекомендуется выполнять упражнение в течение 2-3 минут, затем сделать перерыв. В режиме "Пальминг" закройте глаза и прикройте их ладонями, слушая звуковой отчет. В режиме "Случайная точка" объект будет появляться в разных местах экрана.</p>
+    <div class="instructions-menu" id="instructionsMenu">
+        <h2>Инструкция</h2>
+        
+        <div class="setting-group">
+            <h3>Движущийся объект</h3>
+            <p>Следите за движущимся объектом, не двигая головой. Это упражнение помогает расслабить глазные мышцы и улучшить кровообращение.</p>
+        </div>
+        
+        <div class="setting-group">
+            <h3>Смена фокуса</h3>
+            <p>Следите за объектом, который pulsates. Фокусируйтесь на нем, когда он увеличивается и уменьшается.</p>
+        </div>
+        
+        <div class="setting-group">
+            <h3>Случайная точка</h3>
+            <p>Следите за точкой, которая появляется в случайных местах экрана. Это улучшает периферическое зрение и реакцию.</p>
+        </div>
+        
+        <div class="setting-group">
+            <h3>Пальминг</h3>
+            <p>Закройте глаза и прикройте их ладонями. Слушайте звуковой отчет для расслабления глазных мышц.</p>
+        </div>
+        
+        <div class="setting-group">
+            <h3>Восьмёрка</h3>
+            <p>Следите за объектом, движущимся по траектории восьмёрки. Это улучшает координацию движения глаз.</p>
+        </div>
+        
+        <div class="setting-group">
+            <p>Рекомендуется выполнять упражнение в течение 2-3 минут, затем сделать перерыв.</p>
         </div>
     </div>
 
@@ -374,14 +421,13 @@
             const exerciseArea = document.getElementById('exerciseArea');
             const target = document.getElementById('target');
             const settingsIcon = document.getElementById('settingsIcon');
+            const infoIcon = document.getElementById('infoIcon');
             const settingsMenu = document.getElementById('settingsMenu');
+            const instructionsMenu = document.getElementById('instructionsMenu');
             const saveSettingsBtn = document.getElementById('saveSettings');
-            const instructions = document.getElementById('instructions');
-            const toggleInstructions = document.getElementById('toggleInstructions');
             const timer = document.getElementById('timer');
             const specialContent = document.getElementById('specialContent');
             const trainerTypeButtons = document.querySelectorAll('.trainer-type-btn');
-            const palmingControls = document.getElementById('palmingControls');
             const startPalmingBtn = document.getElementById('startPalmingBtn');
             
             // Настройки по умолчанию
@@ -393,7 +439,8 @@
                 pattern: 'random',
                 bgColor: '#1a2a6c',
                 duration: 3,
-                currentTrainer: 'movingObject'
+                currentTrainer: 'movingObject',
+                pointSpeed: 5
             };
             
             // Состояние тренажёра
@@ -452,6 +499,7 @@
                     document.getElementById('pattern').value = settings.pattern;
                     document.getElementById('bgColor').value = settings.bgColor;
                     document.getElementById('duration').value = settings.duration;
+                    document.getElementById('pointSpeed').value = settings.pointSpeed;
                     
                     // Активируем текущий тип тренажёра
                     document.querySelectorAll('.trainer-type-btn').forEach(btn => {
@@ -477,6 +525,7 @@
                 settings.pattern = document.getElementById('pattern').value;
                 settings.bgColor = document.getElementById('bgColor').value;
                 settings.duration = parseInt(document.getElementById('duration').value);
+                settings.pointSpeed = parseInt(document.getElementById('pointSpeed').value);
                 
                 localStorage.setItem('eyeTrainerSettings', JSON.stringify(settings));
                 applySettings();
@@ -631,7 +680,9 @@
                 target.style.left = `${x}px`;
                 target.style.top = `${y}px`;
                 
-                // Скрываем через случайное время (1-3 секунды)
+                // Скрываем через время, зависящее от скорости
+                const displayTime = 1000 - (settings.pointSpeed * 80); // От 200ms до 920ms
+                
                 setTimeout(() => {
                     if (isRunning && settings.currentTrainer === 'randomPoint') {
                         target.style.display = 'none';
@@ -641,9 +692,9 @@
                             if (isRunning && settings.currentTrainer === 'randomPoint') {
                                 animateRandomPoint();
                             }
-                        }, 1000);
+                        }, 300);
                     }
-                }, 1000 + Math.random() * 2000);
+                }, displayTime);
             }
             
             // Анимация для пальминга
@@ -652,6 +703,7 @@
                 
                 exerciseArea.style.background = 'rgba(0, 0, 0, 0.8)';
                 target.style.display = 'none';
+                startPalmingBtn.style.display = 'none';
                 
                 palmCounter = 30;
                 
@@ -688,7 +740,7 @@
                                 exerciseArea.style.background = '';
                                 target.style.display = 'block';
                                 specialContent.innerHTML = '';
-                                palmingControls.style.display = 'block';
+                                startPalmingBtn.style.display = 'block';
                             }
                         }, 2000);
                     }
@@ -743,9 +795,9 @@
                 
                 // Показываем/скрываем кнопку для пальминга
                 if (type === 'palming') {
-                    palmingControls.style.display = 'block';
+                    startPalmingBtn.style.display = 'block';
                 } else {
-                    palmingControls.style.display = 'none';
+                    startPalmingBtn.style.display = 'none';
                 }
                 
                 // Запускаем выбранную анимацию
@@ -803,14 +855,15 @@
             // Обработчики событий
             settingsIcon.addEventListener('click', () => {
                 settingsMenu.classList.toggle('active');
+                instructionsMenu.classList.remove('active');
+            });
+            
+            infoIcon.addEventListener('click', () => {
+                instructionsMenu.classList.toggle('active');
+                settingsMenu.classList.remove('active');
             });
             
             saveSettingsBtn.addEventListener('click', saveSettings);
-            
-            toggleInstructions.addEventListener('click', () => {
-                instructions.classList.toggle('hidden');
-                toggleInstructions.textContent = instructions.classList.contains('hidden') ? '+' : '−';
-            });
             
             // Обработчики для кнопок выбора типа тренажёра
             trainerTypeButtons.forEach(btn => {
@@ -823,7 +876,6 @@
             
             // Кнопка начала пальминга
             startPalmingBtn.addEventListener('click', () => {
-                palmingControls.style.display = 'none';
                 animatePalming();
             });
             
@@ -837,6 +889,16 @@
             }
             
             checkMobile();
+            
+            // Закрытие меню при клике вне его области
+            document.addEventListener('click', (e) => {
+                if (!settingsMenu.contains(e.target) && e.target !== settingsIcon && !settingsIcon.contains(e.target)) {
+                    settingsMenu.classList.remove('active');
+                }
+                if (!instructionsMenu.contains(e.target) && e.target !== infoIcon && !infoIcon.contains(e.target)) {
+                    instructionsMenu.classList.remove('active');
+                }
+            });
         });
     </script>
 </body>

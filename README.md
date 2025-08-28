@@ -20,6 +20,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            padding: 20px;
         }
         
         .container {
@@ -32,11 +33,12 @@
         h1 {
             margin-bottom: 20px;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            font-size: 2.5rem;
         }
         
         .exercise-area {
             width: 100%;
-            height: 70vh;
+            height: 60vh;
             background-color: rgba(255, 255, 255, 0.1);
             border-radius: 15px;
             position: relative;
@@ -53,29 +55,6 @@
             background: radial-gradient(circle, #ff8a00, #ff2070);
             box-shadow: 0 0 25px rgba(255, 138, 0, 0.7);
             transition: transform 0.2s;
-        }
-        
-        .controls {
-            margin: 20px 0;
-        }
-        
-        button {
-            background: rgba(255, 255, 255, 0.2);
-            border: none;
-            color: white;
-            padding: 12px 24px;
-            margin: 0 10px;
-            border-radius: 50px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(5px);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-        }
-        
-        button:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: translateY(-2px);
         }
         
         .settings-icon {
@@ -121,6 +100,8 @@
             z-index: 99;
             transform: translateX(400px);
             transition: transform 0.4s ease;
+            max-height: 80vh;
+            overflow-y: auto;
         }
         
         .settings-menu.active {
@@ -187,11 +168,29 @@
             max-width: 600px;
             backdrop-filter: blur(5px);
             border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            overflow: hidden;
+            max-height: 200px;
+        }
+        
+        .instructions.hidden {
+            max-height: 0;
+            padding: 0;
+            margin: 0;
+            opacity: 0;
         }
         
         .instructions h2 {
             margin-bottom: 10px;
             color: #ff8a00;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .instructions h2 span {
+            cursor: pointer;
+            font-size: 18px;
         }
         
         .instructions p {
@@ -199,11 +198,53 @@
             line-height: 1.5;
         }
         
+        .trainer-types {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        
+        .trainer-type-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+        
+        .trainer-type-btn.active {
+            background: rgba(255, 138, 0, 0.5);
+            box-shadow: 0 0 15px rgba(255, 138, 0, 0.5);
+        }
+        
+        .timer {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px 20px;
+            border-radius: 50px;
+            display: inline-block;
+            backdrop-filter: blur(5px);
+        }
+        
         @media (max-width: 768px) {
             .settings-menu {
-                width: 80%;
-                right: 10%;
-                left: 10%;
+                width: 90%;
+                right: 5%;
+                left: 5%;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .exercise-area {
+                height: 50vh;
             }
         }
     </style>
@@ -212,20 +253,18 @@
     <div class="container">
         <h1>Тренажёр для глаз</h1>
         
+        <div class="trainer-types">
+            <button class="trainer-type-btn active" data-type="movingObject">Движущийся объект</button>
+            <button class="trainer-type-btn" data-type="focusChange">Смена фокуса</button>
+            <button class="trainer-type-btn" data-type="palming">Пальминг</button>
+            <button class="trainer-type-btn" data-type="figureEight">Восьмёрка</button>
+        </div>
+        
+        <div class="timer" id="timer">00:00</div>
+        
         <div class="exercise-area" id="exerciseArea">
             <div class="target" id="target"></div>
-        </div>
-        
-        <div class="controls">
-            <button id="startBtn">Старт</button>
-            <button id="pauseBtn">Пауза</button>
-            <button id="resetBtn">Сброс</button>
-        </div>
-        
-        <div class="instructions">
-            <h2>Инструкция</h2>
-            <p>Следите за движущимся объектом, не двигая головой. Это упражнение помогает расслабить глазные мышцы и улучшить кровообращение.</p>
-            <p>Рекомендуется выполнять упражнение в течение 2-3 минут, затем сделать перерыв.</p>
+            <div id="specialContent"></div>
         </div>
     </div>
     
@@ -274,7 +313,20 @@
             <input type="color" id="bgColor" value="#1a2a6c">
         </div>
         
-        <button id="saveSettings">Сохранить настройки</button>
+        <div class="setting-group">
+            <label for="duration">Длительность сеанса (мин)</label>
+            <input type="range" id="duration" min="1" max="10" value="3">
+        </div>
+        
+        <button id="saveSettings" style="width:100%; padding:12px; margin-top:10px; background:rgba(255,138,0,0.7); border:none; border-radius:5px; color:white; cursor:pointer;">Сохранить настройки</button>
+    </div>
+    
+    <div class="instructions" id="instructions">
+        <h2>Инструкция <span id="toggleInstructions">−</span></h2>
+        <div id="instructionsContent">
+            <p>Следите за движущимся объектом, не двигая головой. Это упражнение помогает расслабить глазные мышцы и улучшить кровообращение.</p>
+            <p>Рекомендуется выполнять упражнение в течение 2-3 минут, затем сделать перерыв.</p>
+        </div>
     </div>
 
     <script>
@@ -282,12 +334,14 @@
             // Элементы DOM
             const exerciseArea = document.getElementById('exerciseArea');
             const target = document.getElementById('target');
-            const startBtn = document.getElementById('startBtn');
-            const pauseBtn = document.getElementById('pauseBtn');
-            const resetBtn = document.getElementById('resetBtn');
             const settingsIcon = document.getElementById('settingsIcon');
             const settingsMenu = document.getElementById('settingsMenu');
             const saveSettingsBtn = document.getElementById('saveSettings');
+            const instructions = document.getElementById('instructions');
+            const toggleInstructions = document.getElementById('toggleInstructions');
+            const timer = document.getElementById('timer');
+            const specialContent = document.getElementById('specialContent');
+            const trainerTypeButtons = document.querySelectorAll('.trainer-type-btn');
             
             // Настройки по умолчанию
             let settings = {
@@ -296,16 +350,20 @@
                 color: '#ff8a00',
                 trail: 3,
                 pattern: 'random',
-                bgColor: '#1a2a6c'
+                bgColor: '#1a2a6c',
+                duration: 3,
+                currentTrainer: 'movingObject'
             };
             
             // Состояние тренажёра
-            let isRunning = false;
+            let isRunning = true;
             let animationId = null;
             let x = 0;
             let y = 0;
             let dx = 2;
             let dy = 2;
+            let startTime = null;
+            let timerInterval = null;
             
             // Загрузка сохранённых настроек
             function loadSettings() {
@@ -320,9 +378,20 @@
                     document.getElementById('trail').value = settings.trail;
                     document.getElementById('pattern').value = settings.pattern;
                     document.getElementById('bgColor').value = settings.bgColor;
+                    document.getElementById('duration').value = settings.duration;
+                    
+                    // Активируем текущий тип тренажёра
+                    document.querySelectorAll('.trainer-type-btn').forEach(btn => {
+                        if (btn.dataset.type === settings.currentTrainer) {
+                            btn.classList.add('active');
+                        } else {
+                            btn.classList.remove('active');
+                        }
+                    });
                     
                     // Применяем настройки к тренажёру
                     applySettings();
+                    changeTrainerType(settings.currentTrainer);
                 }
             }
             
@@ -334,6 +403,7 @@
                 settings.trail = parseInt(document.getElementById('trail').value);
                 settings.pattern = document.getElementById('pattern').value;
                 settings.bgColor = document.getElementById('bgColor').value;
+                settings.duration = parseInt(document.getElementById('duration').value);
                 
                 localStorage.setItem('eyeTrainerSettings', JSON.stringify(settings));
                 applySettings();
@@ -358,12 +428,18 @@
             // Вспомогательная функция для корректировки цвета
             function adjustColor(hex, percent) {
                 // Упрощённая реализация для демонстрации
-                // В реальном приложении нужно преобразовать hex в RGB, изменить и вернуть обратно в hex
-                return hex; // Здесь должна быть реальная реализация
+                const num = parseInt(hex.replace("#", ""), 16);
+                const R = (num >> 16) + percent;
+                const G = ((num >> 8) & 0x00FF) + percent;
+                const B = (num & 0x0000FF) + percent;
+                
+                return `#${((1 << 24) + (R < 0 ? 0 : R > 255 ? 255 : R) * 65536 + 
+                          (G < 0 ? 0 : G > 255 ? 255 : G) * 256 + 
+                          (B < 0 ? 0 : B > 255 ? 255 : B)).toString(16).slice(1)}`;
             }
             
-            // Функция анимации
-            function animate() {
+            // Функция анимации для движущегося объекта
+            function animateMovingObject() {
                 if (!isRunning) return;
                 
                 const areaWidth = exerciseArea.offsetWidth;
@@ -444,51 +520,159 @@
                     }, settings.trail * 100);
                 }
                 
-                animationId = requestAnimationFrame(animate);
+                animationId = requestAnimationFrame(animateMovingObject);
             }
             
-            // Управление тренажёром
-            startBtn.addEventListener('click', () => {
-                if (!isRunning) {
-                    isRunning = true;
-                    animate();
-                }
-            });
+            // Анимация для смены фокуса
+            function animateFocusChange() {
+                if (!isRunning) return;
+                
+                const time = new Date().getTime() * 0.001;
+                const scale = 0.7 + 0.3 * Math.sin(time);
+                
+                target.style.transform = `scale(${scale})`;
+                target.style.left = '50%';
+                target.style.top = '50%';
+                target.style.marginLeft = `-${settings.size/2}px`;
+                target.style.marginTop = `-${settings.size/2}px`;
+                
+                animationId = requestAnimationFrame(animateFocusChange);
+            }
             
-            pauseBtn.addEventListener('click', () => {
-                isRunning = false;
-                if (animationId) {
-                    cancelAnimationFrame(animationId);
-                }
-            });
+            // Анимация для пальминга
+            function animatePalming() {
+                if (!isRunning) return;
+                
+                exerciseArea.style.background = 'rgba(0, 0, 0, 0.8)';
+                target.style.display = 'none';
+                
+                specialContent.innerHTML = `
+                    <div style="color: white; font-size: 24px; text-align: center; padding-top: 40%">
+                        Закройте глаза и мягко прикройте их ладонями на 30 секунд
+                    </div>
+                `;
+                
+                // Перезапускаем каждые 30 секунд
+                setTimeout(() => {
+                    if (isRunning && settings.currentTrainer === 'palming') {
+                        exerciseArea.style.background = '';
+                        target.style.display = 'block';
+                        specialContent.innerHTML = '';
+                        setTimeout(animatePalming, 1000);
+                    }
+                }, 30000);
+            }
             
-            resetBtn.addEventListener('click', () => {
-                isRunning = false;
+            // Анимация для восьмёрки
+            function animateFigureEight() {
+                if (!isRunning) return;
+                
+                const time = new Date().getTime() * 0.001 * settings.speed / 5;
+                const areaWidth = exerciseArea.offsetWidth;
+                const areaHeight = exerciseArea.offsetHeight;
+                const a = Math.min(areaWidth, areaHeight) * 0.2;
+                
+                // Сложная траектория в виде восьмёрки
+                x = areaWidth/2 + a * Math.sin(time) * Math.cos(time);
+                y = areaHeight/2 + a * Math.sin(time);
+                
+                target.style.left = `${x - settings.size/2}px`;
+                target.style.top = `${y - settings.size/2}px`;
+                
+                animationId = requestAnimationFrame(animateFigureEight);
+            }
+            
+            // Смена типа тренажёра
+            function changeTrainerType(type) {
+                settings.currentTrainer = type;
+                
+                // Останавливаем текущую анимацию
                 if (animationId) {
                     cancelAnimationFrame(animationId);
                 }
                 
-                // Сброс позиции
-                x = exerciseArea.offsetWidth / 2 - settings.size / 2;
-                y = exerciseArea.offsetHeight / 2 - settings.size / 2;
-                target.style.left = `${x}px`;
-                target.style.top = `${y}px`;
+                // Сбрасываем специальный контент
+                specialContent.innerHTML = '';
+                target.style.display = 'block';
+                exerciseArea.style.background = '';
                 
-                // Очистка шлейфа
-                const trails = document.querySelectorAll('.target:not(#target)');
-                trails.forEach(trail => trail.remove());
-            });
+                // Запускаем выбранную анимацию
+                switch(type) {
+                    case 'movingObject':
+                        animateMovingObject();
+                        break;
+                    case 'focusChange':
+                        animateFocusChange();
+                        break;
+                    case 'palming':
+                        animatePalming();
+                        break;
+                    case 'figureEight':
+                        animateFigureEight();
+                        break;
+                }
+            }
             
-            // Управление настройками
+            // Обновление таймера
+            function updateTimer() {
+                if (!startTime) {
+                    startTime = new Date();
+                }
+                
+                const now = new Date();
+                const diff = now - startTime;
+                const minutes = Math.floor(diff / 60000);
+                const seconds = Math.floor((diff % 60000) / 1000);
+                
+                timer.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                
+                // Проверяем, не истекло ли время сеанса
+                if (minutes >= settings.duration) {
+                    // Сбрасываем таймер
+                    startTime = new Date();
+                    
+                    // Можно добавить уведомление о завершении сеанса
+                }
+            }
+            
+            // Инициализация
+            loadSettings();
+            
+            // Запускаем анимацию сразу
+            animateMovingObject();
+            
+            // Запускаем таймер
+            timerInterval = setInterval(updateTimer, 1000);
+            
+            // Обработчики событий
             settingsIcon.addEventListener('click', () => {
                 settingsMenu.classList.toggle('active');
             });
             
             saveSettingsBtn.addEventListener('click', saveSettings);
             
-            // Инициализация
-            loadSettings();
-            resetBtn.click(); // Сброс для начальной позиции
+            toggleInstructions.addEventListener('click', () => {
+                instructions.classList.toggle('hidden');
+                toggleInstructions.textContent = instructions.classList.contains('hidden') ? '+' : '−';
+            });
+            
+            // Обработчики для кнопок выбора типа тренажёра
+            trainerTypeButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    trainerTypeButtons.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    changeTrainerType(btn.dataset.type);
+                });
+            });
+            
+            // Адаптация для мобильных устройств
+            function checkMobile() {
+                if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+                    document.querySelector('meta[name="viewport"]').setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');
+                }
+            }
+            
+            checkMobile();
         });
     </script>
 </body>
